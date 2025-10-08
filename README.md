@@ -42,7 +42,8 @@ En esta entrega se evaluará el uso de objetos en el tp. Debe haber presente al 
 
 # Juego: ESCAPE
 
-Descripcion:
+## Descripcion:
+
 En Escape , el jugador se encuentra atrapado en un laberinto misterioso.
 Su objetivo es encontrar la salida antes de que el tiempo se agote.
 Cada partida comienza con un temporizador limitado, y el jugador deberá desplazarse por los pasillos del laberinto evitando perder tiempo en caminos sin salida.
@@ -50,7 +51,8 @@ Cada partida comienza con un temporizador limitado, y el jugador deberá desplaz
 El reto consiste en memorizar el recorrido y moverse rápidamente para lograr escapar antes del fin del cronómetro.
 Si el tiempo llega a cero, el jugador pierde y deberá intentarlo nuevamente.
 
-Controles:
+## Controles:
+
 Flecha arriba (↑) → Mover hacia arriba
 
 Flecha abajo (↓) → Mover hacia abajo
@@ -58,3 +60,4 @@ Flecha abajo (↓) → Mover hacia abajo
 Flecha izquierda (←) → Mover hacia la izquierda
 
 Flecha derecha (→) → Mover hacia la derecha
+
