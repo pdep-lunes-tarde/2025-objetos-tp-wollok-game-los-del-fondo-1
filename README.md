@@ -1,8 +1,9 @@
 # Grupo
 
-Nombre: **COMPLETAR ACA**
+Nombre: **los del fondo**
 
-Integrantes: **COMPLETAR ACA**
+Integrantes: **Tiago Beltran;
+Robert Onhayan**
 
 # Consigna TP Integrador
 
@@ -60,4 +61,5 @@ Flecha abajo (↓) → Mover hacia abajo
 Flecha izquierda (←) → Mover hacia la izquierda
 
 Flecha derecha (→) → Mover hacia la derecha
+
 
