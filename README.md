@@ -54,12 +54,13 @@ Si el tiempo llega a cero, el jugador pierde y deberá intentarlo nuevamente.
 
 ## Controles:
 
-Flecha arriba (↑) → Mover hacia arriba
+ (w) → Mover hacia arriba
 
-Flecha abajo (↓) → Mover hacia abajo
+ (s) → Mover hacia abajo
 
-Flecha izquierda (←) → Mover hacia la izquierda
+ (a) → Mover hacia la izquierda
 
-Flecha derecha (→) → Mover hacia la derecha
+ (d) → Mover hacia la derecha
+
 
 
