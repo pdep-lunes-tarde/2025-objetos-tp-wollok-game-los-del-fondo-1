@@ -1,28 +1,15 @@
 import juego.*
 import wollok.game.*
 
-object juegoEscape{
-    const intervaloDeTiempoInicial = 50000 // 50 segundos
-    var intervaloDeTiempo = intervaloDeTiempoInicial
-
-    method intervaloDeTiempo() = intervaloDeTiempo
-    method restar_1s() {
-        intervaloDeTiempo = intervaloDeTiempo - 1000
-        }
-    method tiempoRestante() = intervaloDeTiempo
-
-    method ancho() = 20
-    method alto() =  20
-    
-    method configurar() {
-        game.width(self.alto())
-        game.height(self.ancho())
-        game.cellSize(32)
+class Nivel{
+    var property position = new Position(x=1, y=1)
+    method configurar(){
+        game.clear()
         game.addVisual(pj)
         game.addVisual(temporizador)
         game.addVisual(bandera)
-        game.addVisual(mapa)
-
+        game.addVisual(self)
+        self.dibujar_laberinto()
 
         keyboard.w().onPressDo {
             pj.subi()
@@ -39,9 +26,45 @@ object juegoEscape{
 
         // 1000 = 1 segundo   
         game.onTick(1000, "temporizador", { temporizador.actualizar() })
-
         game.onCollideDo(pj, { otro => otro.chocasteConPj(pj) })
     }
+
+    method dibujar_laberinto()
+}
+
+object nivel1 inherits Nivel{
+    method text() = "NIVEL 1"
+
+    override method dibujar_laberinto(){
+            new Range(start = 2, end = 10).forEach({ x => game.addVisual(new Pared(position = game.at(x, 1)))})    
+    }
+}
+
+object nivel2 inherits Nivel{
+    method text() = "NIVEL 2"
+
+    override method dibujar_laberinto(){
+
+    }
+}
+
+object juegoEscape{
+    method ancho() = 20
+    method alto() =  20
+    
+    method configurar() {
+        game.width(self.alto())
+        game.height(self.ancho())
+        game.cellSize(32)
+        self.menuInicio()
+
+    }
+    method menuInicio(){
+        game.addVisual(menuInicio)
+        keyboard.num1().onPressDo({nivel1.configurar()})
+        keyboard.num2().onPressDo({nivel2.configurar()})
+    }
+
 
     method iniciar(){
         self.configurar()
@@ -49,7 +72,7 @@ object juegoEscape{
     }
 
     method restart() {
-        intervaloDeTiempo = intervaloDeTiempoInicial
+        temporizador.tiempoDeJuego(temporizador.tiempoDeJuegoInicial()) 
         game.clear()
         self.configurar()
     }
@@ -58,15 +81,20 @@ object juegoEscape{
         game.clear()
         game.removeTickEvent("temporizador")
         game.addVisual(perdedor)
-        keyboard.enter().onPressDo { self.restart() }
+        keyboard.enter().onPressDo{ self.restart() }
     }
 
     method ganador(){
         game.removeTickEvent("temporizador")
         game.addVisual(ganador)
-        keyboard.enter().onPressDo { self.restart() }
+        keyboard.enter().onPressDo{ self.restart() }
     }
     
+}
+
+object menuInicio {
+    method position() = game.center()
+    method text() = "Bienvenido. Elige un nivel: 1.Nivel 1 o 2.Nivel 2"
 }
 
 object ganador {
@@ -80,39 +108,64 @@ object perdedor {
 }
 
 object temporizador {
+    const tiempoDeJuegoInicial = 10000 // 10 segundos
+    var property tiempoDeJuego = tiempoDeJuegoInicial
+
+    method restar_1s() {
+        tiempoDeJuego = tiempoDeJuego - 1000
+        }
+    method tiempoRestante() = tiempoDeJuego
+    method tiempoDeJuegoInicial() = tiempoDeJuegoInicial
 
     method position() = game.at(game.width() - 5, game.height() - 1)
-    method text() = "tiempo restante: " + juegoEscape.tiempoRestante() + " ms"
+    method text() = "tiempo restante: " + self.tiempoRestante() + " ms"
     
     method actualizar() {
-        if(juegoEscape.intervaloDeTiempo() != 0){
-            juegoEscape.restar_1s() 
+        if(self.tiempoDeJuego() > 0){
+            self.restar_1s() 
         }else{
             juegoEscape.perder()
         }
     }
 }
 
-
-
 object pj {
-    var position = new Position(x=10, y=10)
+    var property position = new Position(x=10, y=10)
+    var property posicionAnterior = position
 
     method image() = "pj.png"
-    method position() = position
+
     method subi() {
-    position = position.up(1)
-    }
-    method baja() {
-    position = position.down(1)
-    }
-    method derecha() {
-    position = position.right(1)
-    }
-    method izquierda() {
-    position = position.left(1)
+        self.actualizarPosicion(position.up(1))
     }
 
+    method baja() {
+        self.actualizarPosicion(position.down(1))
+    }
+
+    method derecha() {
+        self.actualizarPosicion(position.right(1))
+    }
+
+    method izquierda() {
+        self.actualizarPosicion(position.left(1))
+    }
+
+    method actualizarPosicion(nuevaPosicion) {
+        posicionAnterior = position
+        position = nuevaPosicion
+    }
+
+    method posicionAnterior() = posicionAnterior
+}
+
+class Pared {
+    method image() = "pared.png"
+    var property position
+
+    method chocasteConPj(pj) {
+        pj.position(pj.posicionAnterior())
+    }
 }
 
 object bandera {
@@ -125,10 +178,3 @@ object bandera {
     }
 }
 
-object mapa {
-    var property position = game.center()
-    method text() = ""
-
-    method chocasteConPj(pj) {
-    }
-}
