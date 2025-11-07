@@ -28,7 +28,7 @@ class Nivel{
         }
 
         // 1000 = 1 segundo   
-        game.onTick(1000, "temporizador", { temporizador.actualizar() })
+        game.onTick(1000, "temporizador", { temporizador.actualizar(1) })
         game.onCollideDo(pj, { otro => otro.chocasteConPj(pj) })
     }
 
@@ -155,21 +155,24 @@ object juegoEscape{
     method ancho() = 20
     method alto() =  20
     
-    method configurar() {
+    method configuracionInicial() {
         game.width(self.alto())
         game.height(self.ancho())
         game.cellSize(32)
-        self.menuInicio()
-
     }
+
     method menuInicio(){
         game.addVisual(menuInicio)
         keyboard.num1().onPressDo({nivel_1.configurar()})
         keyboard.num2().onPressDo({nivel_2.configurar()})
     }
 
+    method configurar() {
+      self.menuInicio()
+    }
 
     method iniciar(){
+        self.configuracionInicial()
         self.configurar()
         game.start()
     }
@@ -198,35 +201,35 @@ object juegoEscape{
 
 object menuInicio {
     method position() = game.center()
-    method text() = "Bienvenido. Elige un nivel: 1.Nivel 1 o 2.Nivel 2"
+    method text() = "!Bienvenido! \n Elige un nivel: \n 1. Nivel 1 \n 2. Nivel 2"
 }
 
 object ganador {
     method position() = game.center()
-    method text() = "GANASTE ; presiona enter para volver a jugar"
+    method text() = "GANASTE \n\n Presiona Enter para volver a jugar"
 }
 
 object perdedor {
     method position() = game.center()
-    method text() = "PERDISTE ; presiona enter para volver a jugar"
+    method text() = "PERDISTE \n\n Presiona Enter para volver a jugar"
 }
 
 object temporizador {
-    const tiempoDeJuegoInicial = 10000 // 10 segundos
+    const tiempoDeJuegoInicial = 15 // segundos
     var property tiempoDeJuego = tiempoDeJuegoInicial
 
-    method restar_1s() {
-        tiempoDeJuego = tiempoDeJuego - 1000
+    method restar(segundos) {
+        tiempoDeJuego = tiempoDeJuego - segundos
         }
     method tiempoRestante() = tiempoDeJuego
     method tiempoDeJuegoInicial() = tiempoDeJuegoInicial
 
     method position() = game.at(game.width() - 5, game.height() - 1)
-    method text() = "tiempo restante: " + self.tiempoRestante() + " ms"
+    method text() = "tiempo restante: " + self.tiempoRestante() + " s"
     
-    method actualizar() {
+    method actualizar(segundos) {
         if(self.tiempoDeJuego() > 0){
-            self.restar_1s() 
+            self.restar(segundos) 
         }else{
             juegoEscape.perder()
         }
@@ -265,9 +268,21 @@ object pj {
 
     method actualizarPosicion(nuevaPosicion) {
         posicionAnterior = position
+        if(self.sePuedeMover(nuevaPosicion)){
         position = nuevaPosicion
+        }
     }
 
+    method sePuedeMover(posicion) {
+        const objetos = game.getObjectsIn(posicion)
+        if(objetos.isEmpty()) {
+            return true
+        }
+        else {
+            const dejaPasar_noDejaPasar = objetos.any({ p => p.dejaPasar()})
+            return dejaPasar_noDejaPasar
+        }
+}
     method posicionAnterior() = posicionAnterior
 }
 
@@ -278,9 +293,14 @@ class Pared {
     method chocasteConPj(pj) {
         pj.position(pj.posicionAnterior())
     }
+    method dejaPasar() = false
 }
 
-object bandera {
+class ElementoInteractivo{
+    method dejaPasar() = true
+}
+
+object bandera inherits ElementoInteractivo{
     method image() = "bandera.png"
     var property position = new Position(x=1, y=17)
 
@@ -288,9 +308,10 @@ object bandera {
       game.removeVisual(self)
       juegoEscape.ganador()
     }
+
 }
 
-class Reloj{
+class Reloj inherits ElementoInteractivo{
     method image() = "reloj.png"
     var property position
 
@@ -300,7 +321,7 @@ class Reloj{
     }
 }
 
-class Portal{
+class Portal inherits ElementoInteractivo{
     method image() = "portal.png"
     var property position
     var property destino = null
