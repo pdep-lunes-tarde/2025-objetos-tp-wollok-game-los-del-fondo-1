@@ -1,3 +1,6 @@
-program juego {
+import tp.*
+import wollok.game.*
 
+program juego {
+    juegoEscape.iniciar()
 }
